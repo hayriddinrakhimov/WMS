@@ -1,0 +1,68 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; color: #212121; -webkit-font-smoothing: antialiased; }
+    .mono { font-family: Consolas, 'Courier New', monospace; font-size: 13px; }
+    .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #6b7280; }
+    .muted { color: #6b7280; font-size: 14px; }
+    .small { font-size: 12px; }
+    .h2 { font-size: 22px; font-weight: 700; margin: 4px 0 8px; }
+    .row { display: flex; align-items: center; gap: 12px; }
+    .between { justify-content: space-between; }
+    .badge { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+    .badge--blue { background: #e9eeff; color: #2a48ff; }
+    .badge--green { background: #e6f5ef; color: #0d7a52; }
+    .badge--amber { background: #fef3c7; color: #b45309; }
+    .card { background: #ffffff; border: 1px solid #e0e4ea; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+    .card--accent { border-color: #2a48ff; background: linear-gradient(180deg,#fff,#f8faff); }
+    .card--green { border-color: #0d7a52; background: #e6f5ef; }
+    .meta-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin: 16px 0; font-size: 14px; }
+    .hint { font-size: 13px; color: #6b7280; margin-top: 12px; padding: 10px 12px; background: #f8fafc; border-radius: 10px; }
+    .btn-primary { background: #2a48ff; color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 600; margin-top: 12px; }
+    .full { width: 100%; }
+    .status-pill { display: inline-block; margin-top: 12px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .status-pill--wait { background: #fef3c7; color: #b45309; }
+    .pipeline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .pipe-step { width: 72px; height: 72px; border-radius: 50%; background: #2a48ff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; text-align: center; position: relative; }
+    .pipe-step:not(:last-child)::after { content: ''; position: absolute; right: -10px; top: 50%; width: 10px; height: 2px; background: #2a48ff; }
+    .red { color: #c62828; }
+  
+    .shell { display: flex; height: 100vh; }
+    .sidebar { width: 248px; background: #fff; border-right: 1px solid #e0e4ea; padding: 20px 16px; }
+    .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+    .logo-mark { width: 36px; height: 36px; border-radius: 10px; background: #2a48ff; color: #fff; display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px; }
+    .logo-text { font-weight: 700; font-size: 15px; line-height: 1.2; }
+    .nav-item { padding: 10px 12px; border-radius: 10px; font-size: 14px; margin-bottom: 4px; color: #6b7280; }
+    .nav-item.active { background: #e9eeff; color: #2a48ff; font-weight: 600; }
+    .main { flex: 1; padding: 24px 28px; overflow: hidden; }
+    .top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 20px; }
+    .chip { font-size: 12px; padding: 6px 12px; background: #fff; border: 1px solid #e0e4ea; border-radius: 999px; color: #6b7280; }
+  </style></head><body><div class="shell">
+    <aside class="sidebar">
+      <div class="logo"><div class="logo-mark">AA</div><div class="logo-text">Атамекен-<br>Агро</div></div>
+      <div class="nav-item">Главная</div>
+      <div class="nav-item active">Снабжение</div>
+      <div class="nav-item ">Склады</div>
+      <div class="nav-item ">Отчёты</div>
+    </aside>
+    <main class="main">
+      <div class="top"><div><div class="label">Веб-кабинет · Снабжение</div><h1 style="font-size:28px;font-weight:700">Заявки поставщику</h1></div><span class="chip">ЗП-001 отправлена</span></div>
+      
+        <div class="card">
+          <div class="row between">
+            <div><div class="label">Ожидаемая приёмка</div><div class="h2">ОП-001</div></div>
+            <span class="badge badge--amber">Готово к приёмке на ГС</span>
+          </div>
+          <div class="meta-grid">
+            <div><span class="label">Палет</span><strong>22</strong></div>
+            <div><span class="label">Канистр</span><strong>1 320</strong></div>
+            <div><span class="label">Демо-канистра</span><strong class="mono">341X1302R9S18</strong></div>
+          </div>
+          <div class="status-pill status-pill--wait">Статус канистры: expected_receipt</div>
+        </div>
+        <div class="card">
+          <div class="label">Автоматически создано</div>
+          <p>Складская задача <strong>Приёмка · Главный склад</strong> на ТСД (OTP 111)</p>
+        </div>
+    </main>
+  </div></body></html>

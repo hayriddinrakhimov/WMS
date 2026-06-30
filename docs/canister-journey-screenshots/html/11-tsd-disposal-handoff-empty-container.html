@@ -1,0 +1,65 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f5; color: #212121; -webkit-font-smoothing: antialiased; }
+    .mono { font-family: Consolas, 'Courier New', monospace; font-size: 13px; }
+    .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #6b7280; }
+    .muted { color: #6b7280; font-size: 14px; }
+    .small { font-size: 12px; }
+    .h2 { font-size: 22px; font-weight: 700; margin: 4px 0 8px; }
+    .row { display: flex; align-items: center; gap: 12px; }
+    .between { justify-content: space-between; }
+    .badge { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+    .badge--blue { background: #e9eeff; color: #2a48ff; }
+    .badge--green { background: #e6f5ef; color: #0d7a52; }
+    .badge--amber { background: #fef3c7; color: #b45309; }
+    .card { background: #ffffff; border: 1px solid #e0e4ea; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(15,23,42,.04); }
+    .card--accent { border-color: #2a48ff; background: linear-gradient(180deg,#fff,#f8faff); }
+    .card--green { border-color: #0d7a52; background: #e6f5ef; }
+    .meta-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin: 16px 0; font-size: 14px; }
+    .hint { font-size: 13px; color: #6b7280; margin-top: 12px; padding: 10px 12px; background: #f8fafc; border-radius: 10px; }
+    .btn-primary { background: #2a48ff; color: #fff; border: none; border-radius: 12px; padding: 14px; font-size: 15px; font-weight: 600; margin-top: 12px; }
+    .full { width: 100%; }
+    .status-pill { display: inline-block; margin-top: 12px; padding: 6px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .status-pill--wait { background: #fef3c7; color: #b45309; }
+    .pipeline { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .pipe-step { width: 72px; height: 72px; border-radius: 50%; background: #2a48ff; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; text-align: center; position: relative; }
+    .pipe-step:not(:last-child)::after { content: ''; position: absolute; right: -10px; top: 50%; width: 10px; height: 2px; background: #2a48ff; }
+    .red { color: #c62828; }
+  
+    body { background: #eceff1; display:flex; align-items:center; justify-content:center; min-height:100vh; padding: 16px; }
+    .phone { width: 100%; max-width: 358px; background: #f0f2f5; border-radius: 28px; border: 8px solid #1a1a1a; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,.15); }
+    .tsd-top { background: #fff; padding: 14px 16px; border-bottom: 1px solid #e0e4ea; font-size: 13px; font-weight: 600; }
+    .tsd-body { padding: 16px; }
+    .type { font-size: 12px; color: #6b7280; text-transform: uppercase; letter-spacing: .05em; }
+    .title { font-size: 22px; font-weight: 700; margin: 4px 0; }
+    .route { font-size: 13px; color: #2a48ff; font-weight: 600; margin: 8px 0 16px; }
+    .progress-box { background: #fff; border: 1px solid #e0e4ea; border-radius: 14px; padding: 14px; margin-bottom: 14px; }
+    .progress-val { font-size: 24px; font-weight: 700; }
+    .scan { border: 2px dashed #e0e4ea; border-radius: 14px; padding: 20px; text-align: center; background: #fafbfc; margin-bottom: 12px; }
+    .scan strong { display: block; font-size: 15px; margin-bottom: 4px; }
+    .list { list-style: none; margin: 12px 0; }
+    .list li { background: #e6f5ef; border: 1px solid #0d7a52; color: #0d7a52; padding: 10px 12px; border-radius: 10px; font-family: monospace; font-size: 13px; margin-bottom: 6px; }
+    .actions { display: grid; gap: 8px; padding: 12px 16px 20px; background: #fff; border-top: 1px solid #e0e4ea; }
+    .btn-sec { background: #fff; border: 1px solid #e0e4ea; color: #212121; border-radius: 12px; padding: 14px; font-size: 14px; font-weight: 600; }
+    .status { margin-top: 12px; padding: 8px 12px; border-radius: 10px; font-size: 12px; font-weight: 600; background: #fdecea; color: #c62828; }
+    .photo-box { margin-top: 10px; padding: 24px; border: 1px dashed #e0e4ea; border-radius: 12px; text-align: center; color: #6b7280; font-size: 13px; }
+    .actor { font-size: 12px; color: #6b7280; margin-bottom: 8px; }
+  </style></head><body><div class="phone">
+    <div class="tsd-top">ТСД · OTP 111 · Иванов А.С.</div>
+    <div class="tsd-body">
+      <div class="type">Утиль</div>
+      <div class="title">Передача на утиль</div>
+      <div class="muted">Пустая канистра</div>
+      <div class="route">ДС №1 → зона утиля</div>
+      <div class="progress-box"><div class="label">Отсканировано</div><div class="progress-val">1 / 1</div></div>
+      <div class="scan"><strong>Сканировать</strong><span class="muted">Эмуляция сканера</span></div>
+      <ul class="list"><li>341X1302R9S18</li></ul>
+      
+      <div class="status">returned_empty → for_disposal_child</div>
+    </div>
+    <div class="actions">
+      <button class="btn-primary full">Передать на утиль</button>
+      
+    </div>
+  </div></body></html>
