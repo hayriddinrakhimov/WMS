@@ -53,10 +53,10 @@ export function WebSidebar({
 
       <div className={cn('flex items-center gap-2.5 px-4 pt-5 pb-3', collapsed && 'justify-center px-2')}>
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--primary)] text-xs font-bold text-white">
-          AA
+          KP
         </span>
         {!collapsed && (
-          <span className="text-base font-bold tracking-tight text-[var(--foreground)]">Атамекен-Агро</span>
+          <span className="text-base font-bold tracking-tight text-[var(--foreground)]">KAZFOOD PRODUCTS</span>
         )}
       </div>
 
