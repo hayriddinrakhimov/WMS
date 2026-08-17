@@ -7,7 +7,7 @@ export interface Enterprise {
 }
 
 export const ENTERPRISES: Enterprise[] = [
-  { id: 'ent-hq', name: 'Атамекен-Агро (головное)', shortName: 'Головное' },
+  { id: 'ent-hq', name: 'KAZFOOD PRODUCTS (головное)', shortName: 'Головное' },
   { id: 'ent-too-1', name: 'ТОО 1', shortName: 'ТОО 1', parentId: 'ent-hq' },
   { id: 'ent-too-2', name: 'ТОО 2', shortName: 'ТОО 2', parentId: 'ent-hq' },
   { id: 'ent-ast', name: 'Филиал Астана', shortName: 'Астана' },

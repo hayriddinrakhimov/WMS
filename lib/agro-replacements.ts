@@ -1,6 +1,6 @@
 /**
  * Integration file for agricultural product replacements
- * Company: KAZFOODPRODUCTS
+ * Company: KAZFOOD PRODUCTS
  * 
  * This file imports and applies all agricultural product mappings
  * to replace mechanical engineering products throughout the system

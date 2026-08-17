@@ -30,7 +30,7 @@ export function OtpLoginScreen() {
       <div className="login-card">
         <div className="login-header">
           <TsdLogo />
-          <h1 className="login-title">Атамекен-Агро</h1>
+          <h1 className="login-title">KAZFOOD PRODUCTS</h1>
         </div>
 
         <form

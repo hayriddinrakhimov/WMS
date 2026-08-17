@@ -1,6 +1,6 @@
 /**
  * Data replacements for transitioning from mechanical engineering to agriculture sector
- * Company: атамекен-агро → KAZFOODPRODUCTS
+ * Company: Атамекен-Агро → KAZFOOD PRODUCTS
  * 
  * Product mapping: Все продукты переходят на агросферу
  * - Добавки кормовые (1, 2, 3...)
@@ -143,10 +143,10 @@ export const AGRICULTURAL_PRODUCTS = {
 
 // Маппинг компании
 export const COMPANY_MAPPING = {
-  'атамекен-агро': 'KAZFOODPRODUCTS',
-  'Атамекен-Агро': 'KAZFOODPRODUCTS',
-  'Атамекен': 'KAZFOODPRODUCTS',
-  'SUPPLIER_AUGUST': 'KAZFOODPRODUCTS',
+  'атамекен-агро': 'KAZFOOD PRODUCTS',
+  'Атамекен-Агро': 'KAZFOOD PRODUCTS',
+  'Атамекен': 'KAZFOOD PRODUCTS',
+  'SUPPLIER_AUGUST': 'KAZFOOD PRODUCTS',
 }
 
 // Маппинг продуктов (замена прямых совпадений)
@@ -158,7 +158,7 @@ export const PRODUCT_MAPPING: { [key: string]: any } = {
 
 // Функция для замены названия продукта
 export function replaceProductName(oldName: string | null | undefined): string {
-  if (!oldName) return 'Продукт KAZFOODPRODUCTS'
+  if (!oldName) return 'Продукт KAZFOOD PRODUCTS'
 
   // Проверяем маппинг
   const mapped = PRODUCT_MAPPING[oldName]
@@ -166,7 +166,7 @@ export function replaceProductName(oldName: string | null | undefined): string {
 
   // Если в названии есть "продукт", заменяем на добавку
   if (oldName.toLowerCase().includes('продукт')) {
-    return 'Добавка кормовая - KAZFOODPRODUCTS'
+    return 'Добавка кормовая - KAZFOOD PRODUCTS'
   }
 
   return oldName
