@@ -28,7 +28,8 @@ export interface DemoSummary {
   statReturned: number
 }
 
-export const DEMO_STORAGE_KEY = 'wms-promo-state-v11'
+// v12 intentionally resets legacy demo data so old company names cannot persist in UI.
+export const DEMO_STORAGE_KEY = 'wms-promo-state-v12'
 
 export type PersistedDemoState = {
   webUserId: string | null
@@ -94,59 +95,14 @@ function normalizeWebScreen(screen?: string) {
   return MODULE_SCREENS.includes(screen ?? '') ? screen! : 'home'
 }
 
-function migrateFromLegacy(parsed: Partial<PersistedDemoState>): PersistedDemoState {
-  return {
-    ...DEFAULT_STATE,
-    ...parsed,
-    webScreen: normalizeWebScreen(parsed.webScreen),
-    summary: { ...DEFAULT_SUMMARY, ...parsed.summary },
-    operations: parsed.operations ?? [],
-    documents: parsed.documents ?? [],
-    auditLog: parsed.auditLog ?? [],
-    stock: [],
-    canisters: DEFAULT_CANISTERS,
-    pallets: [],
-    boxes: [],
-    expectedReceipts: [],
-    pickTasks: [],
-    batches: [],
-    importCompleted: false,
-    importValidation: null,
-    activeDemoCanisterId: null,
-    procurementRequests: [],
-    consolidatedDemands: [],
-  }
-}
-
 export function loadDemoState(): PersistedDemoState {
   if (typeof window === 'undefined') return DEFAULT_STATE
 
   try {
-    const raw =
-      localStorage.getItem(DEMO_STORAGE_KEY) ??
-      localStorage.getItem('wms-promo-state-v7') ??
-      localStorage.getItem('wms-promo-state-v6') ??
-      localStorage.getItem('wms-promo-state-v5') ??
-      localStorage.getItem('wms-promo-state-v4') ??
-      localStorage.getItem('wms-promo-state-v3') ??
-      localStorage.getItem('wms-promo-state-v2')
-
-    if (!raw) {
-      const legacy = localStorage.getItem('wms-promo-state-v1')
-      if (legacy) {
-        return migrateFromLegacy(JSON.parse(legacy) as Partial<PersistedDemoState>)
-      }
-      return DEFAULT_STATE
-    }
+    const raw = localStorage.getItem(DEMO_STORAGE_KEY)
+    if (!raw) return DEFAULT_STATE
 
     const parsed = JSON.parse(raw) as Partial<PersistedDemoState>
-    const isV9 =
-      localStorage.getItem(DEMO_STORAGE_KEY) !== null ||
-      (parsed as { warehouseTasks?: unknown }).warehouseTasks !== undefined
-
-    if (!isV9) {
-      return migrateFromLegacy(parsed)
-    }
 
     return {
       ...DEFAULT_STATE,

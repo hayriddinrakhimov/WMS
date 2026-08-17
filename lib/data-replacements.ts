@@ -1,6 +1,6 @@
 /**
  * Data replacements for transitioning from mechanical engineering to agriculture sector
- * Company: Атамекен-Агро → KAZFOOD PRODUCTS
+ * Company: KAZFOOD PRODUCTS
  * 
  * Product mapping: Все продукты переходят на агросферу
  * - Добавки кормовые (1, 2, 3...)
@@ -21,7 +21,6 @@ export const MECHANICAL_PRODUCTS = {
 
 // Новые сельскохозяйственные продукты
 export const AGRICULTURAL_PRODUCTS = {
-  // Кормовые добавки
   FEED_ADDITIVE_1: {
     name: 'Добавка кормовая 1 - Виттаспорин',
     category: 'Кормовые добавки',
@@ -37,8 +36,6 @@ export const AGRICULTURAL_PRODUCTS = {
     category: 'Кормовые добавки',
     description: 'Источник витаминов и микроэлементов',
   },
-
-  // Пестициды
   PESTICIDE_1: {
     name: 'Пестицид 1 - Амистар Экстра',
     category: 'Пестициды',
@@ -54,8 +51,6 @@ export const AGRICULTURAL_PRODUCTS = {
     category: 'Пестициды',
     description: 'Инсектоакарицид комбинированный',
   },
-
-  // Удобрения
   FERTILIZER_1: {
     name: 'Удобрение 1 - Азофоска (16-16-16)',
     category: 'Удобрения',
@@ -71,8 +66,6 @@ export const AGRICULTURAL_PRODUCTS = {
     category: 'Удобрения',
     description: 'Фосфорное удобрение длительного действия',
   },
-
-  // Гербициды
   HERBICIDE_1: {
     name: 'Гербицид 1 - Раундап',
     category: 'Гербициды',
@@ -88,8 +81,6 @@ export const AGRICULTURAL_PRODUCTS = {
     category: 'Гербициды',
     description: 'Гербицид для пропашных культур',
   },
-
-  // Фунгициды
   FUNGICIDE_1: {
     name: 'Фунгицид 1 - Анторакол',
     category: 'Фунгициды',
@@ -105,8 +96,6 @@ export const AGRICULTURAL_PRODUCTS = {
     category: 'Фунгициды',
     description: 'Фунгицид контактного действия',
   },
-
-  // Протравители семян
   SEED_TREATMENT_1: {
     name: 'Протравитель 1 - Винцит Ультра',
     category: 'Обработка семян',
@@ -122,8 +111,6 @@ export const AGRICULTURAL_PRODUCTS = {
     category: 'Обработка семян',
     description: 'Фунгицид для предпосевной обработки',
   },
-
-  // Регуляторы роста
   GROWTH_REGULATOR_1: {
     name: 'Регулятор роста 1 - Эпин-Экстра',
     category: 'Регуляторы роста',
@@ -141,38 +128,25 @@ export const AGRICULTURAL_PRODUCTS = {
   },
 }
 
-// Маппинг компании
 export const COMPANY_MAPPING = {
-  'атамекен-агро': 'KAZFOOD PRODUCTS',
-  'Атамекен-Агро': 'KAZFOOD PRODUCTS',
-  'Атамекен': 'KAZFOOD PRODUCTS',
   'SUPPLIER_AUGUST': 'KAZFOOD PRODUCTS',
 }
 
-// Маппинг продуктов (замена прямых совпадений)
 export const PRODUCT_MAPPING: { [key: string]: any } = {
-  // Заменяем старые названия на новые
   'Торнадо 540': AGRICULTURAL_PRODUCTS.PESTICIDE_1,
   'NOMENCLATURE_TORNADO': AGRICULTURAL_PRODUCTS.PESTICIDE_1,
 }
 
-// Функция для замены названия продукта
 export function replaceProductName(oldName: string | null | undefined): string {
   if (!oldName) return 'Продукт KAZFOOD PRODUCTS'
-
-  // Проверяем маппинг
   const mapped = PRODUCT_MAPPING[oldName]
   if (mapped) return mapped.name
-
-  // Если в названии есть "продукт", заменяем на добавку
   if (oldName.toLowerCase().includes('продукт')) {
     return 'Добавка кормовая - KAZFOOD PRODUCTS'
   }
-
   return oldName
 }
 
-// Получение всех продуктов по категориям
 const productsByCategory = {
   additive: [AGRICULTURAL_PRODUCTS.FEED_ADDITIVE_1, AGRICULTURAL_PRODUCTS.FEED_ADDITIVE_2, AGRICULTURAL_PRODUCTS.FEED_ADDITIVE_3],
   pesticide: [AGRICULTURAL_PRODUCTS.PESTICIDE_1, AGRICULTURAL_PRODUCTS.PESTICIDE_2, AGRICULTURAL_PRODUCTS.PESTICIDE_3],
@@ -183,7 +157,6 @@ const productsByCategory = {
   regulator: [AGRICULTURAL_PRODUCTS.GROWTH_REGULATOR_1, AGRICULTURAL_PRODUCTS.GROWTH_REGULATOR_2, AGRICULTURAL_PRODUCTS.GROWTH_REGULATOR_3],
 }
 
-// Функция для получения агро-продукта по индексу (1, 2, 3...)
 export function getAgriculturalProduct(index: number, category: 'additive' | 'pesticide' | 'fertilizer' | 'herbicide' | 'fungicide' | 'treatment' | 'regulator' = 'additive') {
   const products = productsByCategory[category]
   const validIndex = Math.max(0, Math.min(index - 1, products.length - 1))
