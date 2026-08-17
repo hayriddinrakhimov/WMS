@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/Toaster'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Атамекен-Агро WMS',
+  title: 'KAZFOOD PRODUCTS WMS',
   description: 'Промо-макет WMS',
 }
 
