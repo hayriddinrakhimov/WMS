@@ -150,7 +150,7 @@ export const COMPANY_MAPPING = {
 }
 
 // Маппинг продуктов (замена прямых совпадений)
-export const PRODUCT_MAPPING: { [key: string]: typeof AGRICULTURAL_PRODUCTS[keyof typeof AGRICULTURAL_PRODUCTS] | null } = {
+export const PRODUCT_MAPPING: { [key: string]: any } = {
   // Заменяем старые названия на новые
   'Торнадо 540': AGRICULTURAL_PRODUCTS.PESTICIDE_1,
   'NOMENCLATURE_TORNADO': AGRICULTURAL_PRODUCTS.PESTICIDE_1,
@@ -172,18 +172,20 @@ export function replaceProductName(oldName: string | null | undefined): string {
   return oldName
 }
 
+// Получение всех продуктов по категориям
+const productsByCategory = {
+  additive: [AGRICULTURAL_PRODUCTS.FEED_ADDITIVE_1, AGRICULTURAL_PRODUCTS.FEED_ADDITIVE_2, AGRICULTURAL_PRODUCTS.FEED_ADDITIVE_3],
+  pesticide: [AGRICULTURAL_PRODUCTS.PESTICIDE_1, AGRICULTURAL_PRODUCTS.PESTICIDE_2, AGRICULTURAL_PRODUCTS.PESTICIDE_3],
+  fertilizer: [AGRICULTURAL_PRODUCTS.FERTILIZER_1, AGRICULTURAL_PRODUCTS.FERTILIZER_2, AGRICULTURAL_PRODUCTS.FERTILIZER_3],
+  herbicide: [AGRICULTURAL_PRODUCTS.HERBICIDE_1, AGRICULTURAL_PRODUCTS.HERBICIDE_2, AGRICULTURAL_PRODUCTS.HERBICIDE_3],
+  fungicide: [AGRICULTURAL_PRODUCTS.FUNGICIDE_1, AGRICULTURAL_PRODUCTS.FUNGICIDE_2, AGRICULTURAL_PRODUCTS.FUNGICIDE_3],
+  treatment: [AGRICULTURAL_PRODUCTS.SEED_TREATMENT_1, AGRICULTURAL_PRODUCTS.SEED_TREATMENT_2, AGRICULTURAL_PRODUCTS.SEED_TREATMENT_3],
+  regulator: [AGRICULTURAL_PRODUCTS.GROWTH_REGULATOR_1, AGRICULTURAL_PRODUCTS.GROWTH_REGULATOR_2, AGRICULTURAL_PRODUCTS.GROWTH_REGULATOR_3],
+}
+
 // Функция для получения агро-продукта по индексу (1, 2, 3...)
 export function getAgriculturalProduct(index: number, category: 'additive' | 'pesticide' | 'fertilizer' | 'herbicide' | 'fungicide' | 'treatment' | 'regulator' = 'additive') {
-  const categoryMap: { [key: string]: keyof typeof AGRICULTURAL_PRODUCTS } = {
-    additive: `FEED_ADDITIVE_${Math.max(1, index)}`,
-    pesticide: `PESTICIDE_${Math.max(1, index)}`,
-    fertilizer: `FERTILIZER_${Math.max(1, index)}`,
-    herbicide: `HERBICIDE_${Math.max(1, index)}`,
-    fungicide: `FUNGICIDE_${Math.max(1, index)}`,
-    treatment: `SEED_TREATMENT_${Math.max(1, index)}`,
-    regulator: `GROWTH_REGULATOR_${Math.max(1, index)}`,
-  }
-
-  const key = categoryMap[category] as keyof typeof AGRICULTURAL_PRODUCTS
-  return AGRICULTURAL_PRODUCTS[key]
+  const products = productsByCategory[category]
+  const validIndex = Math.max(0, Math.min(index - 1, products.length - 1))
+  return products[validIndex]
 }
