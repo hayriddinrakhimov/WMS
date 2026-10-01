@@ -1,7 +1,7 @@
 /**
  * Integration file for agricultural product replacements
- * Company: KAZFOOD PRODUCTS
- * 
+ * Company: Агрохолдинг
+ *
  * This file imports and applies all agricultural product mappings
  * to replace mechanical engineering products throughout the system
  */
