@@ -28,7 +28,7 @@ export interface DemoSummary {
   statReturned: number
 }
 
-export const DEMO_STORAGE_KEY = 'wms-promo-state-v11'
+export const DEMO_STORAGE_KEY = 'wms-promo-state-v12-agroholding-warehouse-demo'
 
 export type PersistedDemoState = {
   webUserId: string | null
@@ -124,6 +124,7 @@ export function loadDemoState(): PersistedDemoState {
   try {
     const raw =
       localStorage.getItem(DEMO_STORAGE_KEY) ??
+      localStorage.getItem('wms-promo-state-v11') ??
       localStorage.getItem('wms-promo-state-v7') ??
       localStorage.getItem('wms-promo-state-v6') ??
       localStorage.getItem('wms-promo-state-v5') ??
