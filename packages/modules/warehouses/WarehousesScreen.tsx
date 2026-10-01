@@ -10,7 +10,7 @@ import { WarehouseSelector } from '../shared/WarehouseSelector'
 import { StockBalanceDetailPanel } from './StockBalanceDetailPanel'
 import { WarehouseOperationsScreen } from './operations/WarehouseOperationsScreen'
 import { formatStockBalance, stockCategory } from './warehouse-stock-utils'
-import { WAREHOUSES_MOCK, type WarehouseViewTab } from './mock-data'
+import { DEMO_STOCK, WAREHOUSES_MOCK, type WarehouseViewTab } from './mock-data'
 import type { ModuleRenderContext, StockBalance, WarehouseTaskTab } from '@wms/domain'
 
 const STATUS_LABELS: Record<StockBalance['status'], string> = {
@@ -23,6 +23,7 @@ const STATUS_LABELS: Record<StockBalance['status'], string> = {
 
 export function WarehousesScreen({ filter, onNavigate }: ModuleRenderContext) {
   const { stock, expectedReceipts } = useDemoStore()
+  const displayStock = stock.length ? stock : DEMO_STOCK
 
   const defaultWarehouseId = WAREHOUSES_MOCK[0]!.id
   const warehouseId = filter?.warehouseId ?? defaultWarehouseId
@@ -40,16 +41,18 @@ export function WarehousesScreen({ filter, onNavigate }: ModuleRenderContext) {
     () =>
       WAREHOUSES_MOCK.map((w) => ({
         ...w,
-        items: stock.filter((s) => s.warehouseId === w.id).length,
+        items: displayStock.filter((s) => s.warehouseId === w.id).length,
+        halfEmpty: displayStock.filter((s) => s.warehouseId === w.id && s.status === 'half_empty').length,
+        disposal: displayStock.filter((s) => s.warehouseId === w.id && s.status === 'disposal').length,
       })),
-    [stock],
+    [displayStock],
   )
 
   const warehouseName = warehouseStats.find((w) => w.id === warehouseId)?.name ?? 'Склад'
 
   const whStock = useMemo(
-    () => stock.filter((s) => s.warehouseId === warehouseId),
-    [stock, warehouseId],
+    () => displayStock.filter((s) => s.warehouseId === warehouseId),
+    [displayStock, warehouseId],
   )
 
   const filteredStock = useMemo(() => {
