@@ -9,7 +9,7 @@ export function TsdLogo({ className }: { className?: string }) {
       )}
       aria-hidden
     >
-      KP
+      АХ
     </div>
   )
 }
