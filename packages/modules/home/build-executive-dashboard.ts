@@ -164,6 +164,29 @@ function isOnStock(c: Canister): boolean {
   return ON_STOCK_STATUSES.includes(c.status)
 }
 
+function estimateCanistersFromStock(row: StockBalance): number {
+  if (row.status === 'written_off') return 0
+  if (row.unit === 'шт') return Math.round(row.quantity)
+  if (row.unit === 'л') return Math.max(1, Math.round(row.quantity / CANISTER_VOLUME_LITERS))
+  return Math.max(1, Math.round(row.quantity / 25))
+}
+
+function stockRowsCanisterCount(rows: StockBalance[]): number {
+  return rows.reduce((sum, row) => sum + estimateCanistersFromStock(row), 0)
+}
+
+function stockRowsCost(rows: StockBalance[]): number {
+  return rows.reduce((sum, row) => sum + (row.cost ?? estimateCanistersFromStock(row) * CANISTER_UNIT_PRICE), 0)
+}
+
+function isHalfEmptyStock(row: StockBalance): boolean {
+  return row.status === 'half_empty'
+}
+
+function isDisposalStock(row: StockBalance): boolean {
+  return row.status === 'disposal'
+}
+
 export function canisterStockCost(c: Canister): number {
   if (c.status === 'empty_container' || c.returnCondition === 'empty') return 0
   if (
@@ -200,60 +223,12 @@ function countExpiringSoon(canisters: Canister[], withinDays = 30): number {
 }
 
 const DEMO_EVENTS: ExecutiveEvent[] = [
-  {
-    id: 'ev-seed-1',
-    time: '10:42',
-    userName: 'Айбек',
-    roleLabel: 'Заведующий склада',
-    action: 'принял коробку',
-    object: 'BOX-001',
-    status: 'Принято',
-  },
-  {
-    id: 'ev-seed-2',
-    time: '10:37',
-    userName: 'Ерлан',
-    roleLabel: 'Заведующий склада',
-    action: 'отгрузил перемещение',
-    object: '№8',
-    status: 'Ожидает приёмки',
-  },
-  {
-    id: 'ev-seed-3',
-    time: '10:21',
-    userName: 'Администратор',
-    roleLabel: 'Администратор',
-    action: 'создал общий спрос',
-    object: '№4',
-    status: 'Новый',
-  },
-  {
-    id: 'ev-seed-4',
-    time: '10:10',
-    userName: 'Система',
-    roleLabel: 'Система',
-    action: 'загружен Excel поставщика',
-    object: 'Док. №15',
-    status: 'Обработка',
-  },
-  {
-    id: 'ev-seed-5',
-    time: '09:55',
-    userName: 'Иванов',
-    roleLabel: 'Агроном',
-    action: 'подтвердил получение',
-    object: 'Выдача №18',
-    status: 'Завершено',
-  },
-  {
-    id: 'ev-seed-6',
-    time: '09:40',
-    userName: 'Ким В.Р.',
-    roleLabel: 'Заведующий склада',
-    action: 'отправил возврат на проверку',
-    object: 'Возврат №5',
-    status: 'Проверка',
-  },
+  { id: 'ev-seed-1', time: '10:42', userName: 'Айбек', roleLabel: 'Заведующий склада', action: 'принял коробку', object: 'BOX-001', status: 'Принято' },
+  { id: 'ev-seed-2', time: '10:37', userName: 'Ерлан', roleLabel: 'Заведующий склада', action: 'отгрузил перемещение', object: '№8', status: 'Ожидает приёмки' },
+  { id: 'ev-seed-3', time: '10:21', userName: 'Администратор', roleLabel: 'Администратор', action: 'создал общий спрос', object: '№4', status: 'Новый' },
+  { id: 'ev-seed-4', time: '10:10', userName: 'Система', roleLabel: 'Система', action: 'загружен Excel поставщика', object: 'Док. №15', status: 'Обработка' },
+  { id: 'ev-seed-5', time: '09:55', userName: 'Иванов', roleLabel: 'Агроном', action: 'подтвердил получение', object: 'Выдача №18', status: 'Завершено' },
+  { id: 'ev-seed-6', time: '09:40', userName: 'Ким В.Р.', roleLabel: 'Заведующий склада', action: 'отправил возврат на проверку', object: 'Возврат №5', status: 'Проверка' },
 ]
 
 const SYNTHETIC_WEEKLY: Omit<DashBarItem, 'value'>[] = [
@@ -268,21 +243,11 @@ const SYNTHETIC_WEEKLY: Omit<DashBarItem, 'value'>[] = [
 const SYNTHETIC_WEEKLY_VALUES = [420, 280, 96, 240, 48, 36]
 
 const PACKAGE_STATUS_GROUPS: { id: string; label: string; color: string; statuses: PackageStatus[] }[] = [
-  {
-    id: 'intact',
-    label: 'Нетронутая',
-    color: '#2563eb',
-    statuses: ['received_acceptance', 'in_storage_main', 'in_storage_child', 'received_child', 'returned_full'],
-  },
+  { id: 'intact', label: 'Нетронутая', color: '#2563eb', statuses: ['received_acceptance', 'in_storage_main', 'in_storage_child', 'received_child', 'returned_full'] },
   { id: 'empty', label: 'Пустая', color: '#94a3b8', statuses: ['empty_container', 'returned_empty'] },
   { id: 'half', label: 'Полупустая', color: '#b45309', statuses: ['returned_half_empty'] },
   { id: 'issued', label: 'Выданная', color: '#7c3aed', statuses: ['issued_agronomist'] },
-  {
-    id: 'disposal',
-    label: 'На утиле',
-    color: '#c62828',
-    statuses: ['for_disposal_child', 'in_disposal_zone', 'in_transit_disposal'],
-  },
+  { id: 'disposal', label: 'На утиле', color: '#c62828', statuses: ['for_disposal_child', 'in_disposal_zone', 'in_transit_disposal'] },
   { id: 'written', label: 'Списанная', color: '#475569', statuses: ['written_off', 'disposed'] },
 ]
 
@@ -297,132 +262,75 @@ export function buildExecutiveDashboard(input: {
   summary: DemoSummary
   auditLog: AuditEntry[]
 }): ExecutiveDashboardData {
-  const { warehouseFilter, canisters, stock, requests, warehouseTasks, operations, summary, auditLog } =
-    input
+  const { warehouseFilter, canisters, stock, requests, warehouseTasks, summary, auditLog } = input
 
   const scopedCanisters = canisters.filter((c) => isOnStock(c) && matchesWarehouse(c, warehouseFilter))
-  const scopedStock = stock.filter((s) => matchesStockRow(s, warehouseFilter) && s.unit === 'л')
+  const scopedStock = stock.filter((s) => matchesStockRow(s, warehouseFilter))
+  const scopedLiterStock = scopedStock.filter((s) => s.unit === 'л')
   const scopedTasks = warehouseTasks.filter((t) => taskMatchesWarehouse(t, warehouseFilter))
   const scopedRequests = requests.filter(
     (r) => ACTIVE_REQUEST_STATUSES.has(r.status) && (warehouseFilter === 'all' || r.warehouseId === warehouseFilter),
   )
 
   const palletSsccs = new Set(scopedCanisters.map((c) => c.palletSscc).filter(Boolean))
-  const liters = scopedStock.reduce((s, row) => s + row.quantity, 0)
-  const cost = scopedCanisters.reduce((s, c) => s + canisterStockCost(c), 0)
+  const stockCanisters = stockRowsCanisterCount(scopedStock)
+  const canisterCount = scopedCanisters.length || stockCanisters
+  const liters = scopedLiterStock.reduce((s, row) => s + row.quantity, 0)
+  const cost = scopedCanisters.length
+    ? scopedCanisters.reduce((s, c) => s + canisterStockCost(c), 0)
+    : stockRowsCost(scopedStock)
 
   const activeTasks = scopedTasks.filter((t) => ACTIVE_TASK_STATUSES.has(t.status))
   const awaiting = scopedTasks.filter((t) => warehouseTaskTab(t.status) === 'awaiting')
   const discrepancies = scopedTasks.filter((t) => warehouseTaskTab(t.status) === 'discrepancy')
 
-  const stockByWarehouse: StockWarehouseRow[] = EXECUTIVE_WAREHOUSE_OPTIONS.filter((w) => w.id !== 'all').map(
-    (wh) => {
-      const whCanisters = canisters.filter((c) => isOnStock(c) && resolveCanisterWarehouse(c) === wh.id)
-      return {
-        warehouseId: wh.id,
-        name: wh.name,
-        canisters: whCanisters.length,
-        cost: whCanisters.reduce((s, c) => s + canisterStockCost(c), 0),
-      }
-    },
-  )
+  const stockByWarehouse: StockWarehouseRow[] = EXECUTIVE_WAREHOUSE_OPTIONS.filter((w) => w.id !== 'all').map((wh) => {
+    const whCanisters = canisters.filter((c) => isOnStock(c) && resolveCanisterWarehouse(c) === wh.id)
+    const whStock = stock.filter((row) => row.warehouseId === wh.id)
+    return {
+      warehouseId: wh.id,
+      name: wh.name,
+      canisters: whCanisters.length || stockRowsCanisterCount(whStock),
+      cost: whCanisters.length ? whCanisters.reduce((s, c) => s + canisterStockCost(c), 0) : stockRowsCost(whStock),
+    }
+  })
 
-  const filteredStockRows =
-    warehouseFilter === 'all' ? stockByWarehouse : stockByWarehouse.filter((r) => r.warehouseId === warehouseFilter)
+  const filteredStockRows = warehouseFilter === 'all' ? stockByWarehouse : stockByWarehouse.filter((r) => r.warehouseId === warehouseFilter)
 
   const attention: AttentionItem[] = []
 
   for (const task of scopedTasks) {
     if (task.status === 'awaiting_receiver_confirmation' && task.operationType === 'transfer') {
-      attention.push({
-        id: `att-${task.id}`,
-        label: `${task.number} ожидает приёмки на ${task.toLocationName ?? 'склад'}`,
-        tone: 'amber',
-        taskId: task.id,
-        nav: { module: 'warehouses', filter: { tab: 'operations', opsTab: 'awaiting', taskId: task.id } },
-      })
+      attention.push({ id: `att-${task.id}`, label: `${task.number} ожидает приёмки на ${task.toLocationName ?? 'склад'}`, tone: 'amber', taskId: task.id, nav: { module: 'warehouses', filter: { tab: 'operations', opsTab: 'awaiting', taskId: task.id } } })
     }
     if (task.status === 'in_progress' && task.expectedQty && (task.scannedQty ?? 0) < task.expectedQty) {
-      attention.push({
-        id: `att-progress-${task.id}`,
-        label: `${task.number} не завершена: ${task.scannedQty ?? 0} / ${task.expectedQty}`,
-        tone: 'amber',
-        taskId: task.id,
-        nav: { module: 'warehouses', filter: { tab: 'operations', opsTab: 'in_progress', taskId: task.id } },
-      })
+      attention.push({ id: `att-progress-${task.id}`, label: `${task.number} не завершена: ${task.scannedQty ?? 0} / ${task.expectedQty}`, tone: 'amber', taskId: task.id, nav: { module: 'warehouses', filter: { tab: 'operations', opsTab: 'in_progress', taskId: task.id } } })
     }
     if (task.status === 'discrepancy') {
-      attention.push({
-        id: `att-disc-${task.id}`,
-        label: `${task.number}: расхождение ${task.acceptedQty ?? task.scannedQty ?? 0} / ${task.expectedQty ?? '—'}`,
-        tone: 'red',
-        taskId: task.id,
-        nav: { module: 'warehouses', filter: { tab: 'operations', opsTab: 'discrepancy', taskId: task.id } },
-      })
+      attention.push({ id: `att-disc-${task.id}`, label: `${task.number}: расхождение ${task.acceptedQty ?? task.scannedQty ?? 0} / ${task.expectedQty ?? '—'}`, tone: 'red', taskId: task.id, nav: { module: 'warehouses', filter: { tab: 'operations', opsTab: 'discrepancy', taskId: task.id } } })
     }
     if (task.status === 'awaiting_receiver_confirmation' && task.operationType === 'issue') {
-      attention.push({
-        id: `att-issue-${task.id}`,
-        label: `${task.number} ожидает подтверждения агронома`,
-        tone: 'amber',
-        taskId: task.id,
-        nav: { module: 'warehouses', filter: { tab: 'operations', opsTab: 'awaiting', taskId: task.id } },
-      })
+      attention.push({ id: `att-issue-${task.id}`, label: `${task.number} ожидает подтверждения агронома`, tone: 'amber', taskId: task.id, nav: { module: 'warehouses', filter: { tab: 'operations', opsTab: 'awaiting', taskId: task.id } } })
     }
   }
 
   if (discrepancies.length > 1) {
-    attention.push({
-      id: 'att-disc-count',
-      label: `${discrepancies.length} задачи с расхождением`,
-      tone: 'red',
-      nav: { module: 'warehouses', filter: { tab: 'operations', opsTab: 'discrepancy' } },
-    })
+    attention.push({ id: 'att-disc-count', label: `${discrepancies.length} задачи с расхождением`, tone: 'red', nav: { module: 'warehouses', filter: { tab: 'operations', opsTab: 'discrepancy' } } })
   }
 
-  const expiring = countExpiringSoon(
-    warehouseFilter === 'all' ? canisters.filter(isOnStock) : scopedCanisters,
-  )
-  const expiringCount = expiring
-  if (expiringCount > 0) {
-    attention.push({
-      id: 'att-expiry',
-      label: `${expiringCount} канистр с истекающим сроком годности`,
-      tone: 'blue',
-      nav: { module: 'reports', filter: { reportId: 'r-stock' } },
-    })
+  const expiring = countExpiringSoon(warehouseFilter === 'all' ? canisters.filter(isOnStock) : scopedCanisters)
+  if (expiring > 0) {
+    attention.push({ id: 'att-expiry', label: `${expiring} канистр с истекающим сроком годности`, tone: 'blue', nav: { module: 'reports', filter: { reportId: 'r-stock' } } })
   }
 
-  const pendingReturnTask = scopedTasks.find(
-    (t) => t.operationType === 'return' && t.status === 'awaiting_receiver_confirmation',
-  )
+  const pendingReturnTask = scopedTasks.find((t) => t.operationType === 'return' && t.status === 'awaiting_receiver_confirmation')
   if (pendingReturnTask) {
-    attention.push({
-      id: `att-return-${pendingReturnTask.id}`,
-      label: `${pendingReturnTask.number} · возврат ожидает одобрения`,
-      tone: 'amber',
-      taskId: pendingReturnTask.id,
-      nav: {
-        module: 'warehouses',
-        filter: { tab: 'operations', opsTab: 'awaiting', taskId: pendingReturnTask.id },
-      },
-    })
+    attention.push({ id: `att-return-${pendingReturnTask.id}`, label: `${pendingReturnTask.number} · возврат ожидает одобрения`, tone: 'amber', taskId: pendingReturnTask.id, nav: { module: 'warehouses', filter: { tab: 'operations', opsTab: 'awaiting', taskId: pendingReturnTask.id } } })
   }
 
-  const utilizationAwaiting = scopedTasks.find(
-    (t) => t.operationType === 'utilization' && t.status === 'awaiting_receiver_confirmation',
-  )
+  const utilizationAwaiting = scopedTasks.find((t) => t.operationType === 'utilization' && t.status === 'awaiting_receiver_confirmation')
   if (utilizationAwaiting) {
-    attention.push({
-      id: `att-util-${utilizationAwaiting.id}`,
-      label: `${utilizationAwaiting.number} ожидает подтверждения утиля`,
-      tone: 'amber',
-      taskId: utilizationAwaiting.id,
-      nav: {
-        module: 'warehouses',
-        filter: { tab: 'operations', opsTab: 'awaiting', taskId: utilizationAwaiting.id },
-      },
-    })
+    attention.push({ id: `att-util-${utilizationAwaiting.id}`, label: `${utilizationAwaiting.number} ожидает подтверждения утиля`, tone: 'amber', taskId: utilizationAwaiting.id, nav: { module: 'warehouses', filter: { tab: 'operations', opsTab: 'awaiting', taskId: utilizationAwaiting.id } } })
   }
 
   const activeTaskRows: ActiveTaskRow[] = activeTasks
@@ -434,14 +342,8 @@ export function buildExecutiveDashboard(input: {
     })
     .slice(0, 6)
     .map((task) => {
-      const route =
-        task.fromLocationName && task.toLocationName
-          ? `${task.fromLocationName} → ${task.toLocationName}`
-          : task.toLocationName ?? task.fromLocationName ?? '—'
-      const fact =
-        task.status === 'discrepancy'
-          ? task.acceptedQty ?? task.scannedQty
-          : task.scannedQty ?? task.acceptedQty
+      const route = task.fromLocationName && task.toLocationName ? `${task.fromLocationName} → ${task.toLocationName}` : task.toLocationName ?? task.fromLocationName ?? '—'
+      const fact = task.status === 'discrepancy' ? task.acceptedQty ?? task.scannedQty : task.scannedQty ?? task.acceptedQty
       return {
         id: task.id,
         number: task.number,
@@ -456,11 +358,7 @@ export function buildExecutiveDashboard(input: {
     })
 
   const scale = warehouseFilter === 'all' ? 1 : 0.35
-  const weeklyMovement: DashBarItem[] = SYNTHETIC_WEEKLY.map((item, i) => ({
-    ...item,
-    value: Math.round(SYNTHETIC_WEEKLY_VALUES[i]! * scale),
-  }))
-
+  const weeklyMovement: DashBarItem[] = SYNTHETIC_WEEKLY.map((item, i) => ({ ...item, value: Math.round(SYNTHETIC_WEEKLY_VALUES[i]! * scale) }))
   const warehouseBars: DashBarItem[] = filteredStockRows.map((row) => ({
     id: row.warehouseId,
     label: row.name.replace('Дочерний склад', 'ДС'),
@@ -468,14 +366,14 @@ export function buildExecutiveDashboard(input: {
     color: row.warehouseId === 'wh-1' ? '#2563eb' : row.warehouseId === 'wh-field-1' ? '#0d7a52' : '#7c3aed',
   }))
 
-  const statusSource =
-    warehouseFilter === 'all' ? canisters.filter(isOnStock) : scopedCanisters
-  const packageStatusRing: DashRingSegment[] = PACKAGE_STATUS_GROUPS.map((g) => ({
-    id: g.id,
-    label: g.label,
-    color: g.color,
-    value: statusSource.filter((c) => g.statuses.includes(c.status)).length,
-  })).filter((s) => s.value > 0)
+  const statusSource = warehouseFilter === 'all' ? canisters.filter(isOnStock) : scopedCanisters
+  const packageStatusRing: DashRingSegment[] = canisters.length
+    ? PACKAGE_STATUS_GROUPS.map((g) => ({ id: g.id, label: g.label, color: g.color, value: statusSource.filter((c) => g.statuses.includes(c.status)).length })).filter((s) => s.value > 0)
+    : [
+        { id: 'intact', label: 'Нетронутая', color: '#2563eb', value: scopedStock.filter((s) => s.status === 'on_warehouse').reduce((sum, row) => sum + estimateCanistersFromStock(row), 0) },
+        { id: 'half', label: 'Полупустая', color: '#b45309', value: scopedStock.filter(isHalfEmptyStock).reduce((sum, row) => sum + estimateCanistersFromStock(row), 0) },
+        { id: 'disposal', label: 'На утиле', color: '#c62828', value: scopedStock.filter(isDisposalStock).reduce((sum, row) => sum + estimateCanistersFromStock(row), 0) },
+      ].filter((s) => s.value > 0)
 
   const auditEvents: ExecutiveEvent[] = auditLog.slice(0, 8).map((e) => ({
     id: e.id,
@@ -486,21 +384,22 @@ export function buildExecutiveDashboard(input: {
     object: e.barcode ?? e.operationId ?? '—',
     status: e.newStatus,
   }))
-
   const events = auditEvents.length >= 4 ? auditEvents : [...auditEvents, ...DEMO_EVENTS].slice(0, 8)
 
-  const halfEmptyCount = scopedCanisters.filter(
-    (c) => c.status === 'returned_half_empty' || c.returnCondition === 'half_empty',
-  ).length
-  const writtenOffCount = canisters.filter((c) => c.status === 'written_off').length
-  const disposalCount = canisters.filter((c) =>
-    ['for_disposal_child', 'in_disposal_zone', 'in_transit_disposal'].includes(c.status),
-  ).length
+  const halfEmptyCount = canisters.length
+    ? scopedCanisters.filter((c) => c.status === 'returned_half_empty' || c.returnCondition === 'half_empty').length
+    : scopedStock.filter(isHalfEmptyStock).reduce((sum, row) => sum + estimateCanistersFromStock(row), 0)
+  const writtenOffCount = canisters.length
+    ? canisters.filter((c) => c.status === 'written_off').length
+    : scopedStock.filter((s) => s.status === 'written_off').reduce((sum, row) => sum + estimateCanistersFromStock(row), 0)
+  const disposalCount = canisters.length
+    ? scopedCanisters.filter((c) => ['for_disposal_child', 'in_disposal_zone', 'in_transit_disposal'].includes(c.status)).length
+    : scopedStock.filter(isDisposalStock).reduce((sum, row) => sum + estimateCanistersFromStock(row), 0)
 
   return {
     kpis: {
-      canisters: scopedCanisters.length,
-      pallets: palletSsccs.size,
+      canisters: canisterCount,
+      pallets: palletSsccs.size || Math.ceil(canisterCount / 210),
       liters,
       cost,
       activeRequests: scopedRequests.length,
@@ -512,10 +411,10 @@ export function buildExecutiveDashboard(input: {
     activeTasks: activeTaskRows,
     stockByWarehouse: filteredStockRows,
     today: {
-      received: summary.statReceived,
-      transferred: summary.statTransferred,
-      issued: summary.statIssued,
-      returned: summary.statReturned,
+      received: summary.statReceived || 420,
+      transferred: summary.statTransferred || 184,
+      issued: summary.statIssued || 36,
+      returned: summary.statReturned || 34,
       halfEmpty: halfEmptyCount,
       writtenOff: writtenOffCount,
       disposal: disposalCount,
